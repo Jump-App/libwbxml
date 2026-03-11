@@ -20,18 +20,6 @@ The upstream `libwbxml` sources are vendored in `vendor/libwbxml/` and currently
 pinned to `libwbxml-0.11.10` (`e58b1f19f11dbadff53e5b486b8c4b16639a656a`). See
 `vendor/libwbxml/VENDORED_VERSION` for the pinned source metadata.
 
-## Configuration
-
-```elixir
-# config/config.exs
-config :libwbxml,
-  skip_native_build: false # set to `true` if libwbxml is pre-installed system-wide
-```
-
-* `skip_native_build: true` - skips building the static `libwbxml2.a` archive
-  and links the NIF against a system-wide installation (`-lwbxml2`).  The NIF
-  is still compiled so the Elixir API works.
-
 ## Compiler task
 
 * `mix compile` - builds native artefacts through `elixir_make`
@@ -43,8 +31,8 @@ need to invoke it manually.
 ## Development workflow
 
 1. `git clone ... && cd pkgs/libwbxml`
-2. `mix test` - the very first run downloads & builds *libwbxml* (approx. 10 s on a
-   modern laptop). Subsequent test runs are instant.
+2. `mix test` - the very first run compiles the vendored *libwbxml* sources.
+   Subsequent test runs are instant.
 
 Useful Mix task:
 
