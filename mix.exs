@@ -25,7 +25,9 @@ defmodule Libwbxml.MixProject do
     [
       files: [
         "lib",
+        "vendor",
         "native",
+        "Makefile",
         "mix.exs"
       ],
       maintainers: ["Carson Call"],

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 # -----------------------------------------------------------------------------
 # Top-level CMake configuration that
-#   * Fetches and builds the libwbxml static library (unless SKIP_WBXML=ON)
+#   * Builds the vendored libwbxml static library (unless SKIP_WBXML=ON)
 #   * Builds the wbxml_nif shared library used by the Elixir wrapper
 # -----------------------------------------------------------------------------
 
@@ -54,26 +54,16 @@ endif()
 include_directories(SYSTEM ${ERLANG_INCLUDE_DIR})
 
 # -----------------------------------------------------------------------------
-# Fetch & build libwbxml unless the caller opted to skip it
+# Build vendored libwbxml unless the caller opted to skip it
 # -----------------------------------------------------------------------------
 
 if(NOT SKIP_WBXML)
-  # CMake 4.2's FetchContent expects Git_VERSION to already be populated.
-  find_package(Git REQUIRED)
-  include(FetchContent)
+  set(LIBWBXML_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../vendor/libwbxml")
+  set(LIBWBXML_SRC_DIR "${LIBWBXML_SOURCE_DIR}/src")
 
-  # Fetch libwbxml source code
-  FetchContent_Declare(
-    libwbxml
-    GIT_REPOSITORY https://github.com/libwbxml/libwbxml.git
-    GIT_TAG master
-  )
-
-  # Suppress deprecation warning for FetchContent_Populate since we manually build libwbxml
-  if(POLICY CMP0169)
-    cmake_policy(SET CMP0169 OLD)
+  if(NOT EXISTS "${LIBWBXML_SRC_DIR}/wbxml.h")
+    message(FATAL_ERROR "Vendored libwbxml sources not found in ${LIBWBXML_SRC_DIR}")
   endif()
-  FetchContent_Populate(libwbxml)
 
   # Copy config header files to build directory
   file(COPY "${CMAKE_CURRENT_LIST_DIR}/wbxml_config.h" DESTINATION "${CMAKE_BINARY_DIR}")
@@ -81,29 +71,29 @@ if(NOT SKIP_WBXML)
 
   # Build libwbxml static library ourselves (simpler than using their complex build system)
   set(LIBWBXML_SOURCES
-    ${libwbxml_SOURCE_DIR}/src/wbxml_base64.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_buffers.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_charset.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_conv.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_elt.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_encoder.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_errors.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_lists.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_log.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_mem.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_parser.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_tables.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_tree.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_tree_clb_wbxml.c
-    ${libwbxml_SOURCE_DIR}/src/wbxml_tree_clb_xml.c
+    ${LIBWBXML_SRC_DIR}/wbxml_base64.c
+    ${LIBWBXML_SRC_DIR}/wbxml_buffers.c
+    ${LIBWBXML_SRC_DIR}/wbxml_charset.c
+    ${LIBWBXML_SRC_DIR}/wbxml_conv.c
+    ${LIBWBXML_SRC_DIR}/wbxml_elt.c
+    ${LIBWBXML_SRC_DIR}/wbxml_encoder.c
+    ${LIBWBXML_SRC_DIR}/wbxml_errors.c
+    ${LIBWBXML_SRC_DIR}/wbxml_lists.c
+    ${LIBWBXML_SRC_DIR}/wbxml_log.c
+    ${LIBWBXML_SRC_DIR}/wbxml_mem.c
+    ${LIBWBXML_SRC_DIR}/wbxml_parser.c
+    ${LIBWBXML_SRC_DIR}/wbxml_tables.c
+    ${LIBWBXML_SRC_DIR}/wbxml_tree.c
+    ${LIBWBXML_SRC_DIR}/wbxml_tree_clb_wbxml.c
+    ${LIBWBXML_SRC_DIR}/wbxml_tree_clb_xml.c
   )
 
   add_library(wbxml2_static STATIC ${LIBWBXML_SOURCES})
-  target_include_directories(wbxml2_static PUBLIC ${libwbxml_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
+  target_include_directories(wbxml2_static PUBLIC ${LIBWBXML_SRC_DIR} ${CMAKE_BINARY_DIR})
 
   # Set up variables for linking
   set(WBXML_TARGET wbxml2_static)
-  set(LIBWBXML_PUBLIC_INCLUDES ${libwbxml_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
+  set(LIBWBXML_PUBLIC_INCLUDES ${LIBWBXML_SRC_DIR} ${CMAKE_BINARY_DIR})
 endif()
 
 # -----------------------------------------------------------------------------

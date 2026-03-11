@@ -1,0 +1,6 @@
+upstream_project: libwbxml
+upstream_tag: libwbxml-0.11.10
+upstream_commit: e58b1f19f11dbadff53e5b486b8c4b16639a656a
+source_url: https://github.com/libwbxml/libwbxml
+tarball_url: https://api.github.com/repos/libwbxml/libwbxml/tarball/refs/tags/libwbxml-0.11.10
+vendored_on: 2026-03-11

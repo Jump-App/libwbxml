@@ -10,12 +10,15 @@ two Elixir functions:
 
 the dependency is compiled.
 The heavy lifting happens inside a C reference implementation of *libwbxml*.
-This project compiles the vendored upstream sources **together with** the Erlang
-NIF (`wbxml_nif.so`) via the project's `Makefile` and the
-[`elixir_make`](https://hex.pm/packages/elixir_make) compiler.
+This project compiles it **together with** the Erlang NIF (`wbxml_nif.so`)
+via the [`elixir_make`](https://hex.pm/packages/elixir_make) compiler.
 Because the compiler hook runs **before** the Elixir code is loaded,
 `Libwbxml.load_nif/0` is guaranteed to succeed as long as your build tool-chain
 is present.
+
+The upstream `libwbxml` sources are vendored in `vendor/libwbxml/` and currently
+pinned to `libwbxml-0.11.10` (`e58b1f19f11dbadff53e5b486b8c4b16639a656a`). See
+`vendor/libwbxml/VENDORED_VERSION` for the pinned source metadata.
 
 ## Configuration
 
@@ -31,10 +34,8 @@ config :libwbxml,
 
 ## Compiler task
 
-* `mix compile.libwbxml` - (re)builds native artefacts
-* `mix compile.libwbxml --force` - forces rebuild even if nothing is stale
-* `mix compile.libwbxml --verbose` - prints each shell command executed
-* `mix clean` - removes artefacts & manifest (`{:noop, []}` when nothing to do)
+* `mix compile` - builds native artefacts through `elixir_make`
+* `mix clean` - removes artefacts and the native build directory
 
 The task runs automatically when the dependency is compiled; you almost never
 need to invoke it manually.
@@ -45,11 +46,9 @@ need to invoke it manually.
 2. `mix test` - the very first run downloads & builds *libwbxml* (approx. 10 s on a
    modern laptop). Subsequent test runs are instant.
 
-Useful Mix tasks - executed automatically by regular `mix compile`:
+Useful Mix task:
 
-* `mix compile.libwbxml` - (re)compile native artefacts
-* `mix compile.libwbxml --force` - force rebuild even if nothing is stale
-* `mix compile.libwbxml --verbose` - print each executed shell command
+* `mix compile` - (re)compile native artefacts through the project `Makefile`
 
 ## Testing
 
