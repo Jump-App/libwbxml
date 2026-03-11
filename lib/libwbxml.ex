@@ -2,8 +2,9 @@ defmodule Libwbxml do
   @moduledoc """
   Thin Elixir wrapper around the native **libwbxml** implementation.  All
   heavy lifting happens in the `wbxml_nif` shared library which is compiled
-  automatically by the [`elixir_cmake`](https://hex.pm/packages/elixir_cmake)
-  compiler when the dependency is first built. At runtime we only need to
+  automatically by the project's `Makefile` via
+  [`elixir_make`](https://hex.pm/packages/elixir_make) when the dependency is
+  first built. At runtime we only need to
   locate that `.so`/`.dylib` and load it.
 
   When the NIF is built as part of the Mix compilation process it is placed

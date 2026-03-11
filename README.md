@@ -10,8 +10,9 @@ two Elixir functions:
 
 the dependency is compiled.
 The heavy lifting happens inside a C reference implementation of *libwbxml*.
-This project compiles it **together with** the Erlang NIF (`wbxml_nif.so`)
-via the [`elixir_cmake`](https://hex.pm/packages/elixir_cmake) compiler.
+This project compiles the vendored upstream sources **together with** the Erlang
+NIF (`wbxml_nif.so`) via the project's `Makefile` and the
+[`elixir_make`](https://hex.pm/packages/elixir_make) compiler.
 Because the compiler hook runs **before** the Elixir code is loaded,
 `Libwbxml.load_nif/0` is guaranteed to succeed as long as your build tool-chain
 is present.
