@@ -64,6 +64,9 @@ Pushing a `v*` tag automatically runs `.github/workflows/release.yml`, which
 builds the precompiled artifacts, creates or updates the corresponding GitHub
 Release, and uploads the generated tarballs.
 
+A PR will be opened updating `checksum.exs` as necessary. That will need to
+be manually merged.
+
 ## License
 
 MIT for the Elixir wrapper.  libwbxml itself is LGPL-2.1.

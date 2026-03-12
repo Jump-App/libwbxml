@@ -35,6 +35,7 @@ defmodule Libwbxml.MixProject do
         "lib",
         "native",
         "vendor",
+        "checksum.exs",
         "Makefile",
         "mix.exs",
         "README.md"
