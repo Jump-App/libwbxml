@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+      LIBWBXML_FORCE_BUILD: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Elixir and Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          version-file: .tool-versions
+          version-type: strict
+
+      - name: Install native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libexpat1-dev
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Run tests
+        run: mix test --warnings-as-errors
+
+      - name: Check formatting
+        run: mix format --check-formatted
