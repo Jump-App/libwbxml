@@ -30,7 +30,7 @@ need to invoke it manually.
 
 ## Development workflow
 
-1. `git clone ... && cd pkgs/libwbxml`
+1. `git clone ...`
 2. `mix test` - the very first run compiles the vendored *libwbxml* sources.
    Subsequent test runs are instant.
 
