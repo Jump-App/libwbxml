@@ -20,10 +20,16 @@ The upstream `libwbxml` sources are vendored in `vendor/libwbxml/` and currently
 pinned to `libwbxml-0.11.10` (`e58b1f19f11dbadff53e5b486b8c4b16639a656a`). See
 `vendor/libwbxml/VENDORED_VERSION` for the pinned source metadata.
 
+When release artifacts are available, `libwbxml` will prefer downloading a
+precompiled NIF for the current target. Set `LIBWBXML_FORCE_BUILD=true` to skip
+artifact download and force a local build from the vendored sources.
+
 ## Compiler task
 
 * `mix compile` - builds native artefacts through `elixir_make`
 * `mix clean` - removes artefacts and the native build directory
+* `MIX_ENV=prod mix elixir_make.precompile` - builds release tarballs for the
+  configured targets
 
 The task runs automatically when the dependency is compiled; you almost never
 need to invoke it manually.
@@ -44,6 +50,19 @@ The test-suite exercises both the Elixir wrapper and the NIF round-trip.  It
 does **not** attempt to validate the *semantics* of the C library itself - we
 trust the upstream test-suite for that - only that our build & FFI plumbing
 is correct.
+
+## Release workflow
+
+Create and push a version tag to trigger the release pipeline:
+
+```sh
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+Pushing a `v*` tag automatically runs `.github/workflows/release.yml`, which
+builds the precompiled artifacts, creates or updates the corresponding GitHub
+Release, and uploads the generated tarballs.
 
 ## License
 
