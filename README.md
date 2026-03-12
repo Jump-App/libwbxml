@@ -64,8 +64,10 @@ Pushing a `v*` tag automatically runs `.github/workflows/release.yml`, which
 builds the precompiled artifacts, creates or updates the corresponding GitHub
 Release, and uploads the generated tarballs.
 
-A PR will be opened updating `checksum.exs` as necessary. That will need to
-be manually merged.
+If the generated `checksum.exs` differs from `main`, the workflow pushes or
+updates a `release/checksum-vX.Y.Z` branch. The run also logs a GitHub URL for
+opening the PR manually. If `checksum.exs` is unchanged, the workflow skips the
+branch update.
 
 ## License
 

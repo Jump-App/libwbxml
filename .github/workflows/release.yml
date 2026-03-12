@@ -110,6 +110,8 @@ jobs:
         run: mix elixir_make.checksum --all --print --ignore-unavailable
 
       - name: Create checksum pull request
+        id: checksum_pr
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v7
         with:
           branch: release/checksum-${{ github.ref_name }}
@@ -120,3 +122,37 @@ jobs:
             Generated `checksum.exs` for `${{ github.ref_name }}` after publishing precompiled release artifacts.
           add-paths: |
             checksum.exs
+
+      - name: Report checksum branch status
+        if: always()
+        run: |
+          branch="release/checksum-${GITHUB_REF_NAME}"
+          pr_url="https://github.com/${GITHUB_REPOSITORY}/pull/new/${branch}"
+
+          if [ "${{ steps.checksum_pr.outcome }}" = "success" ] && [ "${{ steps.checksum_pr.outputs.pull-request-operation }}" = "none" ]; then
+            echo "No checksum.exs changes detected relative to main; skipping branch update."
+            {
+              echo "## Checksum branch"
+              echo
+              echo 'No `checksum.exs` changes were detected relative to `main`.'
+              echo
+              printf 'No branch update or pull request is needed for `%s`.\n' "${GITHUB_REF_NAME}"
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          echo "Checksum branch is ready: ${branch}"
+          echo "Create the PR manually: ${pr_url}"
+
+          if [ "${{ steps.checksum_pr.outcome }}" != "success" ]; then
+            echo "Create checksum pull request step did not complete successfully; continuing after branch creation attempt."
+          fi
+
+          {
+            echo "## Checksum branch"
+            echo
+            printf 'A checksum branch is available for `%s`.\n' "${GITHUB_REF_NAME}"
+            echo
+            printf -- '- Branch: `%s`\n' "${branch}"
+            echo "- Open PR: ${pr_url}"
+          } >> "${GITHUB_STEP_SUMMARY}"
