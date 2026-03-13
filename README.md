@@ -53,21 +53,28 @@ is correct.
 
 ## Release workflow
 
-Create and push a version tag to trigger the release pipeline:
+Releases now have one manual step: after GitHub has the precompiled tarballs,
+`checksum.exs` must be regenerated and committed by hand.
 
-```sh
-git tag vX.Y.Z
-git push origin vX.Y.Z
-```
+1. Cut and push the release tag:
 
-Pushing a `v*` tag automatically runs `.github/workflows/release.yml`, which
-builds the precompiled artifacts, creates or updates the corresponding GitHub
-Release, and uploads the generated tarballs.
+   ```sh
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
+   ```
 
-If the generated `checksum.exs` differs from `main`, the workflow pushes or
-updates a `release/checksum-vX.Y.Z` branch. The run also logs a GitHub URL for
-opening the PR manually. If `checksum.exs` is unchanged, the workflow skips the
-branch update.
+2. Wait for `.github/workflows/release.yml` to finish. Pushing a `v*` tag still
+   builds the precompiled artifacts, creates or updates the corresponding
+   GitHub Release, and uploads the generated tarballs.
+
+3. Regenerate `checksum.exs` from the released artifacts:
+
+   ```sh
+    MIX_ENV=prod mix elixir_make.checksum --all --ignore-unavailable
+   ```
+
+4. Commit the updated `checksum.exs` to `main` through your normal review
+   process.
 
 ## License
 
